@@ -83,7 +83,7 @@ class RecetaAdapter(
                 return
             }
 
-            if (uri.startsWith("http://") || uri.startsWith("https://") || uri.startsWith("content://") || uri.startsWith("/")) {
+            if (uri.startsWith("http://") || uri.startsWith("https://") || uri.startsWith("content://") || uri.startsWith("file") || uri.startsWith("/")) {
                 // CASO 1: Internet (Viene de tu panel CRUD en VS Code) o Archivo de Cámara/Galería
                 // Coil guarda automáticamente en caché de disco las URLs HTTP sin configurar nada extra
                 imageView.load(uri) {

@@ -114,10 +114,11 @@ class RecetaDetalleActivity : AppCompatActivity() {
         // Actualizar icono de favorito
         actualizarIconoFavorito(receta.esFavorito)
 
+
         // Cargar imagen principal de forma híbrida (Internet / Memoria local / Drawable)
         val uriPortada = receta.imagenUri
         if (!uriPortada.isNullOrEmpty()) {
-            if (uriPortada.startsWith("http://") || uriPortada.startsWith("https://") || uriPortada.startsWith("content://") || uriPortada.startsWith("/")) {
+            if (uriPortada.startsWith("http://") || uriPortada.startsWith("https://") || uriPortada.startsWith("content://") || uriPortada.startsWith("file") || uriPortada.startsWith("/")) {
                 binding.ivReceta.load(uriPortada) {
                     crossfade(true)
                     placeholder(R.drawable.ic_image_placeholder)

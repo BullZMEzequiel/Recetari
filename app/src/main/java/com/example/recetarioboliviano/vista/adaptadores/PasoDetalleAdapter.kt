@@ -49,7 +49,7 @@ class PasoDetalleAdapter : ListAdapter<PasoPreparacion, PasoDetalleAdapter.PasoV
         }
 
         private fun gestionarCargaImagenPaso(context: Context, imageView: ImageView, uri: String) {
-            if (uri.startsWith("http://") || uri.startsWith("https://") || uri.startsWith("content://") || uri.startsWith("/")) {
+            if (uri.startsWith("http://") || uri.startsWith("https://") || uri.startsWith("content://") || uri.startsWith("file") || uri.startsWith("/")) {
                 // CASO A: URL de Internet (Cloudinary/Panel) o foto local de la cámara del usuario
                 imageView.load(uri) {
                     crossfade(true)

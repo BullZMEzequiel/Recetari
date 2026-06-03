@@ -8,8 +8,10 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.widget.SearchView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.recetarioboliviano.R
+import com.example.recetarioboliviano.RecetarioApp
 import com.example.recetarioboliviano.databinding.ActivityMainBinding
 import com.example.recetarioboliviano.modelo.entidades.Receta
 import com.example.recetarioboliviano.modelo.util.Constantes
@@ -19,10 +21,7 @@ import com.example.recetarioboliviano.vista.adaptadores.RecetaAdapter
 import com.example.recetarioboliviano.vistamodelo.RecetaViewModel
 import com.example.recetarioboliviano.vistamodelo.UsuarioViewModel
 import com.google.android.material.tabs.TabLayout
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import com.example.recetarioboliviano.RecetarioApp
 
 /**
  * Activity principal con navegación por tabs.
@@ -32,7 +31,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val recetaViewModel: RecetaViewModel by viewModels()
     private val usuarioViewModel: UsuarioViewModel by viewModels()
-
     private lateinit var adaptador: RecetaAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,13 +46,11 @@ class MainActivity : AppCompatActivity() {
         setupFab()
         setupBottomNavigation()
         setupUserHeader()
+        setupSwipeRefresh()
         observeData()
-        
+
         // Sincronizar recetas oficiales al iniciar
-        val recetaDao = (application as RecetarioApp).database.recetaDao()
-        CoroutineScope(Dispatchers.Main).launch {
-            SincronizadorRecetas(recetaDao).sincronizarConServidor()
-        }
+        sincronizar()
     }
 
     private fun setupToolbar() {
@@ -66,9 +62,27 @@ class MainActivity : AppCompatActivity() {
         binding.userHeader.setOnClickListener {
             irAPerfil()
         }
-
         binding.btnNotificaciones.setOnClickListener {
             mostrarDialogoDepartamentos()
+        }
+    }
+
+    private fun setupSwipeRefresh() {
+        binding.swipeRefresh.setOnRefreshListener {
+            sincronizar()
+        }
+    }
+
+    /**
+     * Descarga el JSON del servidor (GitHub) y actualiza la base local.
+     * Usa lifecycleScope para no filtrar la corrutina si se cierra la pantalla.
+     * La lista se redibuja sola gracias a los Flow/LiveData de Room.
+     */
+    private fun sincronizar() {
+        val recetaDao = (application as RecetarioApp).database.recetaDao()
+        lifecycleScope.launch {
+            SincronizadorRecetas(recetaDao).sincronizarConServidor()
+            binding.swipeRefresh.isRefreshing = false
         }
     }
 
@@ -90,6 +104,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
+
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
@@ -124,12 +139,12 @@ class MainActivity : AppCompatActivity() {
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, opciones)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerFiltro.adapter = adapter
-
         binding.spinnerFiltro.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 val categoria = if (position == 0) null else opciones[position]
                 recetaViewModel.filtrarPorCategoria(categoria)
             }
+
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
     }
@@ -178,13 +193,11 @@ class MainActivity : AppCompatActivity() {
                 binding.tvNombreUsuario.text = usuario.nombre
                 binding.tvUbicacionUsuario.text = "${usuario.departamento}, ${usuario.pais}"
                 binding.tvUbicacionUsuario.visibility = View.VISIBLE
-
                 // Usamos el ImageHelper actualizado con Coil para el avatar
                 ImageHelper.cargarAvatar(binding.ivAvatar, usuario.avatarUri)
             } else { // 🚀 CONTROL CRÍTICO: Si no hay usuario registrado, redirigimos al Splash
                 // El Splash es quien debe decidir si ir a Registro o si hubo un error de carga
                 binding.tvUbicacionUsuario.visibility = View.GONE
-
                 val intent = Intent(this, SplashActivity::class.java)
                 startActivity(intent)
                 finish() // Destruimos MainActivity para frenar cualquier proceso roto en segundo plano
@@ -228,6 +241,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // Los LiveData se encargarán de actualizar la UI automáticamente
+        // Los LiveData se encargarán de actualizar la UI automáticamente.
+        // Si quieres que también se sincronice cada vez que la app vuelve al frente,
+        // puedes descomentar la siguiente línea:
+        // sincronizar()
     }
 }

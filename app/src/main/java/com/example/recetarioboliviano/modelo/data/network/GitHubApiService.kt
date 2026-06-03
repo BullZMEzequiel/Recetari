@@ -1,22 +1,34 @@
 package com.example.recetarioboliviano.modelo.data.network
 
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Query
 
 interface GitHubApiService {
 
-    // Apunta directamente a la ruta de tu archivo en la rama principal
     @GET("BullZMEzequiel/Recetari/master/api/recetas_semanales.json")
-    suspend fun obtenerRecetasSemanales(): List<RecetaNetwork>
+    suspend fun obtenerRecetasSemanales(
+        @Query("t") cacheBuster: Long   // rompe el caché del CDN
+    ): List<RecetaNetwork>
 
     companion object {
-        // La URL Base de GitHub para archivos planos en crudo (Raw)
         private const val BASE_URL = "https://raw.githubusercontent.com/"
 
         fun create(): GitHubApiService {
+            val client = OkHttpClient.Builder()
+                .addInterceptor { chain ->
+                    val request = chain.request().newBuilder()
+                        .header("Cache-Control", "no-cache")  // refuerzo
+                        .build()
+                    chain.proceed(request)
+                }
+                .build()
+
             return Retrofit.Builder()
                 .baseUrl(BASE_URL)
+                .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
                 .create(GitHubApiService::class.java)
