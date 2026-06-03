@@ -2,6 +2,8 @@ package com.example.recetarioboliviano.modelo.entidades
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.io.Serializable
+
 
 /**
  * Entidad Receta que representa una receta en el recetario.
@@ -21,5 +23,7 @@ data class Receta(
     val departamento: String,
     val esFavorito: Boolean = false,
     val esCreadaPorUsuario: Boolean = false,
-    val fechaCreacion: Long = System.currentTimeMillis()
-)
+    val fechaCreacion: Long = System.currentTimeMillis(),
+    val servidorUrl: String? = null // Será nuestra clave única para el contenido de internet
+
+) : Serializable

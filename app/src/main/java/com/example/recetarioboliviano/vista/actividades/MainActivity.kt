@@ -14,10 +14,15 @@ import com.example.recetarioboliviano.databinding.ActivityMainBinding
 import com.example.recetarioboliviano.modelo.entidades.Receta
 import com.example.recetarioboliviano.modelo.util.Constantes
 import com.example.recetarioboliviano.modelo.util.ImageHelper
+import com.example.recetarioboliviano.modelo.util.SincronizadorRecetas
 import com.example.recetarioboliviano.vista.adaptadores.RecetaAdapter
 import com.example.recetarioboliviano.vistamodelo.RecetaViewModel
 import com.example.recetarioboliviano.vistamodelo.UsuarioViewModel
 import com.google.android.material.tabs.TabLayout
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import com.example.recetarioboliviano.RecetarioApp
 
 /**
  * Activity principal con navegación por tabs.
@@ -44,6 +49,12 @@ class MainActivity : AppCompatActivity() {
         setupBottomNavigation()
         setupUserHeader()
         observeData()
+        
+        // Sincronizar recetas oficiales al iniciar
+        val recetaDao = (application as RecetarioApp).database.recetaDao()
+        CoroutineScope(Dispatchers.Main).launch {
+            SincronizadorRecetas(recetaDao).sincronizarConServidor()
+        }
     }
 
     private fun setupToolbar() {

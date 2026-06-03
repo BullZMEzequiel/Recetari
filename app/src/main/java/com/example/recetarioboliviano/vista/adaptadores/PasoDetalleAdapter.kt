@@ -1,14 +1,17 @@
 package com.example.recetarioboliviano.vista.adaptadores
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.recetarioboliviano.R
 import com.example.recetarioboliviano.databinding.ItemPasoDetalleBinding
 import com.example.recetarioboliviano.modelo.entidades.PasoPreparacion
-import com.example.recetarioboliviano.modelo.util.ImageHelper
+import coil.load
 
 /**
  * Adaptador para mostrar los pasos de preparación en la pantalla de detalle.
@@ -38,9 +41,35 @@ class PasoDetalleAdapter : ListAdapter<PasoPreparacion, PasoDetalleAdapter.PasoV
 
             if (!paso.imagenUri.isNullOrEmpty()) {
                 binding.cardImagenPaso.visibility = View.VISIBLE
-                ImageHelper.cargarImagen(binding.ivImagenPaso, paso.imagenUri)
+                // CARGA HÍBRIDA OPTIMIZADA CON COIL PARA LOS PASOS
+                gestionarCargaImagenPaso(binding.root.context, binding.ivImagenPaso, paso.imagenUri)
             } else {
                 binding.cardImagenPaso.visibility = View.GONE
+            }
+        }
+
+        private fun gestionarCargaImagenPaso(context: Context, imageView: ImageView, uri: String) {
+            if (uri.startsWith("http://") || uri.startsWith("https://") || uri.startsWith("content://") || uri.startsWith("/")) {
+                // CASO A: URL de Internet (Cloudinary/Panel) o foto local de la cámara del usuario
+                imageView.load(uri) {
+                    crossfade(true)
+                    placeholder(R.drawable.ic_image_placeholder)
+                    error(R.drawable.ic_image_placeholder)
+                }
+            } else {
+                // CASO B: Receta del sistema que apunte a un drawable interno por nombre de texto
+                val resourceId = context.resources.getIdentifier(
+                    uri,
+                    "drawable",
+                    context.packageName
+                )
+                if (resourceId != 0) {
+                    imageView.load(resourceId) {
+                        crossfade(true)
+                    }
+                } else {
+                    imageView.load(R.drawable.ic_image_placeholder)
+                }
             }
         }
     }

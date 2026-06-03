@@ -21,6 +21,7 @@ import com.example.recetarioboliviano.vistamodelo.CarpetaViewModel
 import com.example.recetarioboliviano.vistamodelo.CarpetaViewModelFactory
 import com.example.recetarioboliviano.vistamodelo.RecetaViewModel
 import com.google.android.material.chip.Chip
+import coil.load
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
@@ -113,8 +114,26 @@ class RecetaDetalleActivity : AppCompatActivity() {
         // Actualizar icono de favorito
         actualizarIconoFavorito(receta.esFavorito)
 
-        // Cargar imagen principal
-        ImageHelper.cargarImagen(binding.ivReceta, receta.imagenUri)
+        // Cargar imagen principal de forma híbrida (Internet / Memoria local / Drawable)
+        val uriPortada = receta.imagenUri
+        if (!uriPortada.isNullOrEmpty()) {
+            if (uriPortada.startsWith("http://") || uriPortada.startsWith("https://") || uriPortada.startsWith("content://") || uriPortada.startsWith("/")) {
+                binding.ivReceta.load(uriPortada) {
+                    crossfade(true)
+                    placeholder(R.drawable.ic_image_placeholder)
+                    error(R.drawable.ic_image_placeholder)
+                }
+            } else {
+                val resourceId = resources.getIdentifier(uriPortada, "drawable", packageName)
+                if (resourceId != 0) {
+                    binding.ivReceta.load(resourceId) { crossfade(true) }
+                } else {
+                    binding.ivReceta.load(R.drawable.ic_image_placeholder)
+                }
+            }
+        } else {
+            binding.ivReceta.load(R.drawable.ic_image_placeholder)
+        }
 
         // Procesar pasos de preparación
         procesarPasos(receta.preparacion)

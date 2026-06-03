@@ -43,10 +43,11 @@ interface RecetaDao {
     @Query("SELECT * FROM recetas WHERE esCreadaPorUsuario = 1 ORDER BY fechaCreacion DESC")
     fun obtenerRecetasUsuario(): Flow<List<Receta>>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    // 1. Cambiamos la estrategia a IGNORE para que no pise los datos guardados ni favoritos del usuario
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertar(receta: Receta): Long
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertarVarias(recetas: List<Receta>)
 
     @Update
@@ -60,4 +61,8 @@ interface RecetaDao {
 
     @Query("SELECT COUNT(*) FROM recetas")
     suspend fun contarRecetas(): Int
+
+    // 2. Agregamos esta query para saber si una receta de internet ya la tenemos registrada en el celular
+    @Query("SELECT EXISTS(SELECT 1 FROM recetas WHERE servidorUrl = :url LIMIT 1)")
+    suspend fun existeRecetaServidor(url: String): Boolean
 }
