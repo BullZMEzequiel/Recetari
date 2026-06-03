@@ -7,7 +7,8 @@ import android.graphics.Matrix
 import android.media.ExifInterface
 import android.net.Uri
 import android.widget.ImageView
-import com.bumptech.glide.Glide
+import coil.load
+import coil.transform.CircleCropTransformation
 import com.example.recetarioboliviano.R
 import java.io.File
 import java.io.FileOutputStream
@@ -15,12 +16,10 @@ import java.io.InputStream
 
 /**
  * Helper para centralizar la lógica de manejo de imágenes en la aplicación.
+ * Adaptado para Coil con soporte para URLs, archivos locales y recursos drawable por nombre.
  */
 object ImageHelper {
 
-    /**
-     * Carga una imagen en un ImageView usando Glide con placeholder.
-     */
     fun cargarImagen(imageView: ImageView, uriString: String?) {
         val context = imageView.context
         if (uriString.isNullOrEmpty()) {
@@ -28,37 +27,28 @@ object ImageHelper {
             return
         }
 
-        val uri = try {
-            Uri.parse(uriString)
-        } catch (e: Exception) {
-            null
-        }
-
-        if (uri == null) {
-            imageView.setImageResource(R.drawable.ic_image_placeholder)
-            return
-        }
-
-        // Si es un archivo local, verificar si existe
-        if (uri.scheme == "file") {
-            val file = File(uri.path ?: "")
-            if (!file.exists()) {
+        // Caso 1: Es una URL de internet (GitHub/Cloudinary) o almacenamiento local
+        if (uriString.startsWith("http") || uriString.startsWith("content") || uriString.startsWith("file")) {
+            imageView.load(uriString) {
+                crossfade(true)
+                placeholder(R.drawable.ic_image_placeholder)
+                error(R.drawable.ic_image_placeholder)
+            }
+        } else {
+            // Caso 2: Es un recurso local de la carpeta drawable (ej: "img_chairo")
+            val resourceId = context.resources.getIdentifier(uriString, "drawable", context.packageName)
+            if (resourceId != 0) {
+                imageView.load(resourceId) {
+                    crossfade(true)
+                    placeholder(R.drawable.ic_image_placeholder)
+                    error(R.drawable.ic_image_placeholder)
+                }
+            } else {
                 imageView.setImageResource(R.drawable.ic_image_placeholder)
-                return
             }
         }
-
-        Glide.with(context)
-            .load(uri)
-            .centerCrop()
-            .placeholder(R.drawable.ic_image_placeholder)
-            .error(R.drawable.ic_image_placeholder)
-            .into(imageView)
     }
 
-    /**
-     * Carga un avatar circular.
-     */
     fun cargarAvatar(imageView: ImageView, uriString: String?) {
         val context = imageView.context
         if (uriString.isNullOrEmpty()) {
@@ -66,18 +56,26 @@ object ImageHelper {
             return
         }
 
-        val uri = try {
-            Uri.parse(uriString)
-        } catch (e: Exception) {
-            null
+        if (uriString.startsWith("http") || uriString.startsWith("content") || uriString.startsWith("file")) {
+            imageView.load(uriString) {
+                crossfade(true)
+                transformations(CircleCropTransformation())
+                placeholder(R.drawable.ic_avatar_default)
+                error(R.drawable.ic_avatar_default)
+            }
+        } else {
+            val resourceId = context.resources.getIdentifier(uriString, "drawable", context.packageName)
+            if (resourceId != 0) {
+                imageView.load(resourceId) {
+                    crossfade(true)
+                    transformations(CircleCropTransformation())
+                    placeholder(R.drawable.ic_avatar_default)
+                    error(R.drawable.ic_avatar_default)
+                }
+            } else {
+                imageView.setImageResource(R.drawable.ic_avatar_default)
+            }
         }
-
-        Glide.with(context)
-            .load(uri)
-            .circleCrop()
-            .placeholder(R.drawable.ic_avatar_default)
-            .error(R.drawable.ic_avatar_default)
-            .into(imageView)
     }
 
     /**

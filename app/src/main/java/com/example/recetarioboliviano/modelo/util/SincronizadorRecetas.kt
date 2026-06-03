@@ -3,7 +3,6 @@ package com.example.recetarioboliviano.modelo.util
 import com.example.recetarioboliviano.modelo.dao.RecetaDao
 import com.example.recetarioboliviano.modelo.data.network.GitHubApiService
 import com.example.recetarioboliviano.modelo.entidades.Receta
-import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -27,8 +26,10 @@ class SincronizadorRecetas(private val recetaDao: RecetaDao) {
                     val yaExiste = recetaDao.existeRecetaServidor(recetaNet.imagen)
 
                     if (!yaExiste) {
-                        // Solo si no existe en Room, la empaquetamos y la guardamos
-                        val preparacionJson = Gson().toJson(recetaNet.pasos)
+                        // En lugar de meter el JSON crudo que rompe la UI, unificamos los pasos en un lindo texto legible
+                        val preparacionFormateada = recetaNet.pasos.joinToString(separator = "\n") { paso ->
+                            "${paso.numero}. ${paso.descripcion}"
+                        }
                         
                         val nuevaReceta = Receta(
                             titulo = recetaNet.nombre,
@@ -36,7 +37,7 @@ class SincronizadorRecetas(private val recetaDao: RecetaDao) {
                             tiempoPreparacion = recetaNet.tiempo ?: "45 min",
                             cantidadPersonas = recetaNet.personas ?: "4 personas",
                             ingredientes = recetaNet.ingredientes,
-                            preparacion = preparacionJson, 
+                            preparacion = preparacionFormateada,
                             categoria = recetaNet.categoria ?: "General",
                             departamento = recetaNet.departamento,
                             esFavorito = false,

@@ -7,13 +7,3 @@
 
 # Keep Room entities
 -keep class com.example.recetarioboliviano.modelo.entidades.** { *; }
-
-# Keep Glide generated API
--keep public class * implements com.bumptech.glide.module.GlideModule
--keep class * extends com.bumptech.glide.module.AppGlideModule {
- <init>(...);
-}
--keep public enum com.bumptech.glide.load.ImageHeaderParser$** {
-  **[] $VALUES;
-  public *;
-}
