@@ -20,6 +20,12 @@ interface CarpetaDao {
     @Query("SELECT * FROM carpetas ORDER BY nombre ASC")
     fun obtenerTodasLasCarpetas(): Flow<List<Carpeta>>
 
+    @Query("SELECT * FROM carpetas WHERE nombre LIKE '%' || :busqueda || '%' ORDER BY nombre ASC")
+    fun buscarCarpetas(busqueda: String): Flow<List<Carpeta>>
+
+    @Query("SELECT * FROM recetas WHERE id IN (SELECT recetaId FROM receta_carpeta_cross_ref WHERE carpetaId = :carpetaId) AND (titulo LIKE '%' || :busqueda || '%' OR ingredientes LIKE '%' || :busqueda || '%')")
+    fun buscarRecetasDeCarpeta(carpetaId: Int, busqueda: String): Flow<List<com.example.recetarioboliviano.modelo.entidades.Receta>>
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun agregarRecetaACarpeta(crossRef: RecetaCarpetaCrossRef)
 

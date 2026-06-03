@@ -80,8 +80,9 @@ class RecetaFormActivity : AppCompatActivity() {
                 if (optimizedPath != null) {
                     // Borrar el temporal original pesado
                     File(path).delete()
-                    imagenUri = Uri.fromFile(File(optimizedPath))
-                    ImageHelper.cargarImagen(binding.ivReceta, imagenUri.toString())
+                    val optimizedUri = Uri.fromFile(File(optimizedPath))
+                    imagenUri = optimizedUri // 👈 Guardamos el URI local optimizado
+                    ImageHelper.cargarImagen(binding.ivReceta, optimizedUri.toString())
                 }
             }
         }
@@ -94,7 +95,7 @@ class RecetaFormActivity : AppCompatActivity() {
             val localPath = ImageHelper.copiarImagenAArchivoLocal(this, it)
             if (localPath != null) {
                 val localUri = Uri.fromFile(File(localPath))
-                imagenUri = localUri
+                imagenUri = localUri // 👈 Guardamos el URI local optimizado
                 ImageHelper.cargarImagen(binding.ivReceta, localUri.toString())
             }
         }
@@ -110,7 +111,8 @@ class RecetaFormActivity : AppCompatActivity() {
                 val optimizedPath = ImageHelper.copiarImagenAArchivoLocal(this, uri)
                 if (optimizedPath != null) {
                     File(path).delete()
-                    actualizarImagenPaso(pasoEditandoImagen, Uri.fromFile(File(optimizedPath)).toString())
+                    val localUri = Uri.fromFile(File(optimizedPath))
+                    actualizarImagenPaso(pasoEditandoImagen, localUri.toString())
                 }
             }
         }
@@ -122,7 +124,8 @@ class RecetaFormActivity : AppCompatActivity() {
         uri?.let {
             val path = ImageHelper.copiarImagenAArchivoLocal(this, it)
             if (pasoEditandoImagen > 0 && path != null) {
-                actualizarImagenPaso(pasoEditandoImagen, Uri.fromFile(File(path)).toString())
+                val localUri = Uri.fromFile(File(path))
+                actualizarImagenPaso(pasoEditandoImagen, localUri.toString())
             }
         }
     }

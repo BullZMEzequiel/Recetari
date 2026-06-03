@@ -181,8 +181,7 @@ class MainActivity : AppCompatActivity() {
 
                 // Usamos el ImageHelper actualizado con Coil para el avatar
                 ImageHelper.cargarAvatar(binding.ivAvatar, usuario.avatarUri)
-            } else {
-                // 🚀 CONTROL CRÍTICO: Si no hay usuario registrado, redirigimos al Splash
+            } else { // 🚀 CONTROL CRÍTICO: Si no hay usuario registrado, redirigimos al Splash
                 // El Splash es quien debe decidir si ir a Registro o si hubo un error de carga
                 binding.tvUbicacionUsuario.visibility = View.GONE
 

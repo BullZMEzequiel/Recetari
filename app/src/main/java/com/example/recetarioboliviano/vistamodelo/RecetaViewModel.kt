@@ -48,28 +48,40 @@ class RecetaViewModel(application: Application) : AndroidViewModel(application) 
         val categoria = _categoriaFiltro.value
         val soloFavoritos = _verSoloFavoritos.value ?: false
 
-        if (soloFavoritos) {
-            repository.favoritos.asLiveData()
-        } else {
-            when {
-                busqueda.isNotEmpty() && departamento != null -> {
+        when {
+            soloFavoritos -> {
+                if (busqueda.isNotEmpty()) {
+                    repository.buscarFavoritos(busqueda).asLiveData()
+                } else {
+                    repository.favoritos.asLiveData()
+                }
+            }
+            departamento != null && categoria != null -> {
+                if (busqueda.isNotEmpty()) {
+                    repository.buscarRecetasPorDeptoYCategoria(busqueda, departamento, categoria).asLiveData()
+                } else {
+                    repository.obtenerRecetasPorDeptoYCategoria(departamento, categoria).asLiveData()
+                }
+            }
+            departamento != null -> {
+                if (busqueda.isNotEmpty()) {
                     repository.buscarRecetasPorDepartamento(busqueda, departamento).asLiveData()
-                }
-                busqueda.isNotEmpty() && categoria != null -> {
-                    repository.buscarRecetasPorCategoria(busqueda, categoria).asLiveData()
-                }
-                busqueda.isNotEmpty() -> {
-                    repository.buscarRecetasPorNombreODepartamento(busqueda).asLiveData()
-                }
-                departamento != null -> {
+                } else {
                     repository.obtenerRecetasPorDepartamento(departamento).asLiveData()
                 }
-                categoria != null -> {
+            }
+            categoria != null -> {
+                if (busqueda.isNotEmpty()) {
+                    repository.buscarRecetasPorCategoria(busqueda, categoria).asLiveData()
+                } else {
                     repository.obtenerRecetasPorCategoria(categoria).asLiveData()
                 }
-                else -> {
-                    repository.todasLasRecetas.asLiveData()
-                }
+            }
+            busqueda.isNotEmpty() -> {
+                repository.buscarRecetasPorNombreODepartamento(busqueda).asLiveData()
+            }
+            else -> {
+                repository.todasLasRecetas.asLiveData()
             }
         }
     }

@@ -58,6 +58,15 @@ class RecetarioRepository(
     fun buscarRecetasPorCategoria(busqueda: String, categoria: String): Flow<List<Receta>> =
         recetaDao.buscarRecetasPorCategoria(busqueda, categoria)
 
+    fun buscarRecetasPorDeptoYCategoria(busqueda: String, departamento: String, categoria: String): Flow<List<Receta>> =
+        recetaDao.buscarRecetasPorDeptoYCategoria(busqueda, departamento, categoria)
+
+    fun obtenerRecetasPorDeptoYCategoria(departamento: String, categoria: String): Flow<List<Receta>> =
+        recetaDao.obtenerRecetasPorDeptoYCategoria(departamento, categoria)
+
+    fun buscarFavoritos(busqueda: String): Flow<List<Receta>> =
+        recetaDao.buscarFavoritos(busqueda)
+
     fun buscarRecetasPorNombreODepartamento(busqueda: String): Flow<List<Receta>> =
         recetaDao.buscarRecetasPorNombreODepartamento(busqueda)
 
@@ -82,6 +91,12 @@ class RecetarioRepository(
     suspend fun eliminarCarpeta(carpeta: Carpeta) = carpetaDao.eliminarCarpeta(carpeta)
 
     suspend fun actualizarCarpeta(carpeta: Carpeta) = carpetaDao.actualizarCarpeta(carpeta)
+
+    fun buscarCarpetas(busqueda: String): Flow<List<Carpeta>> =
+        carpetaDao.buscarCarpetas(busqueda)
+
+    fun buscarRecetasDeCarpeta(carpetaId: Int, busqueda: String): Flow<List<Receta>> =
+        carpetaDao.buscarRecetasDeCarpeta(carpetaId, busqueda)
 
     suspend fun agregarRecetaACarpeta(recetaId: Int, carpetaId: Int) {
         carpetaDao.agregarRecetaACarpeta(RecetaCarpetaCrossRef(recetaId, carpetaId))

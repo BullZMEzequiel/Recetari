@@ -1,5 +1,6 @@
 package com.example.recetarioboliviano.modelo.util
 
+import android.util.Log
 import com.example.recetarioboliviano.modelo.dao.RecetaDao
 import com.example.recetarioboliviano.modelo.data.network.GitHubApiService
 import com.example.recetarioboliviano.modelo.entidades.Receta
@@ -16,21 +17,24 @@ class SincronizadorRecetas(private val recetaDao: RecetaDao) {
     suspend fun sincronizarConServidor() {
         withContext(Dispatchers.IO) {
             try {
-                // 1. Descargamos las recetas desde GitHub
+                Log.d("Sincronizador", "Iniciando descarga de recetas...")
                 val recetasInternet = apiService.obtenerRecetasSemanales()
+                Log.d("Sincronizador", "Descargadas ${recetasInternet.size} recetas.")
+
                 var nuevasInsertadas = 0
+                var actualizadas = 0
 
-                // 2. Procesamos una por una para verificar duplicados y respetar favoritos locales
                 recetasInternet.forEach { recetaNet ->
-                    // Usamos la URL de la imagen como identificador único del servidor
-                    val yaExiste = recetaDao.existeRecetaServidor(recetaNet.imagen)
+                    // Buscamos si ya existe por nombre y departamento (más estable que la URL de imagen)
+                    // O mantenemos servidorUrl si confiamos en que no cambia.
+                    val recetaLocal = recetaDao.obtenerRecetaPorUrlServidor(recetaNet.imagen)
 
-                    if (!yaExiste) {
-                        // En lugar de meter el JSON crudo que rompe la UI, unificamos los pasos en un lindo texto legible
-                        val preparacionFormateada = recetaNet.pasos.joinToString(separator = "\n") { paso ->
-                            "${paso.numero}. ${paso.descripcion}"
-                        }
-                        
+                    val preparacionFormateada = recetaNet.pasos.joinToString(separator = "\n") { paso ->
+                        "${paso.numero}. ${paso.descripcion}"
+                    }
+
+                    if (recetaLocal == null) {
+                        Log.d("Sincronizador", "Insertando nueva receta: ${recetaNet.nombre}")
                         val nuevaReceta = Receta(
                             titulo = recetaNet.nombre,
                             imagenUri = recetaNet.imagen,
@@ -41,19 +45,39 @@ class SincronizadorRecetas(private val recetaDao: RecetaDao) {
                             categoria = recetaNet.categoria ?: "General",
                             departamento = recetaNet.departamento,
                             esFavorito = false,
-                            esCreadaPorUsuario = false, // Oficial del sistema
-                            servidorUrl = recetaNet.imagen // Clave de control
+                            esCreadaPorUsuario = false,
+                            servidorUrl = recetaNet.imagen
                         )
-                        
                         recetaDao.insertar(nuevaReceta)
                         nuevasInsertadas++
+                    } else {
+                        // Si ya existe, comparamos campos para ver si hay cambios
+                        val cambioDetectado = recetaLocal.titulo != recetaNet.nombre ||
+                                recetaLocal.ingredientes != recetaNet.ingredientes ||
+                                recetaLocal.preparacion != preparacionFormateada ||
+                                recetaLocal.categoria != (recetaNet.categoria ?: "General") ||
+                                recetaLocal.departamento != recetaNet.departamento
+
+                        if (cambioDetectado) {
+                            Log.d("Sincronizador", "Actualizando receta existente: ${recetaNet.nombre}")
+                            val recetaActualizada = recetaLocal.copy(
+                                titulo = recetaNet.nombre,
+                                ingredientes = recetaNet.ingredientes,
+                                preparacion = preparacionFormateada,
+                                tiempoPreparacion = recetaNet.tiempo ?: recetaLocal.tiempoPreparacion,
+                                cantidadPersonas = recetaNet.personas ?: recetaLocal.cantidadPersonas,
+                                categoria = recetaNet.categoria ?: recetaLocal.categoria,
+                                departamento = recetaNet.departamento,
+                                imagenUri = recetaNet.imagen // Actualizar URL por si cambió
+                            )
+                            recetaDao.actualizar(recetaActualizada)
+                            actualizadas++
+                        }
                     }
                 }
-                
-                println("Sincronización completada con éxito. Se añadieron $nuevasInsertadas recetas nuevas.")
+                Log.d("Sincronizador", "Sincronización terminada. Nuevas: $nuevasInsertadas, Actualizadas: $actualizadas")
             } catch (e: Exception) {
-                e.printStackTrace()
-                println("Fallo de red o servidor offline. Trabajando con caché previa de Room.")
+                Log.e("Sincronizador", "Error sincronizando: ${e.message}", e)
             }
         }
     }

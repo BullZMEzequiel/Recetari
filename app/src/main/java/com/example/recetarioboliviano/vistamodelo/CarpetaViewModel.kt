@@ -12,7 +12,18 @@ import kotlinx.coroutines.launch
 class CarpetaViewModel(private val repository: RecetarioRepository) : ViewModel() {
 
     // Todas las carpetas disponibles
-    val todasLasCarpetas: LiveData<List<Carpeta>> = repository.todasLasCarpetas.asLiveData()
+    private val _busquedaCarpeta = MutableLiveData<String>("")
+    val todasLasCarpetas: LiveData<List<Carpeta>> = _busquedaCarpeta.switchMap { busqueda ->
+        if (busqueda.isNullOrBlank()) {
+            repository.todasLasCarpetas.asLiveData()
+        } else {
+            repository.buscarCarpetas(busqueda).asLiveData()
+        }
+    }
+
+    fun buscarCarpetas(busqueda: String) {
+        _busquedaCarpeta.value = busqueda
+    }
 
     /**
      * Crea una nueva carpeta con el nombre proporcionado.
@@ -50,8 +61,41 @@ class CarpetaViewModel(private val repository: RecetarioRepository) : ViewModel(
     }
 
     /**
-     * Obtiene las recetas contenidas en una carpeta.
+     * Obtiene las recetas contenidas en una carpeta con soporte para búsqueda.
      */
+    private val _busquedaEnCarpeta = MutableLiveData<String>("")
+    private val _idCarpetaActual = MutableLiveData<Int>()
+
+    val recetasDeCarpeta: LiveData<List<Receta>> = MediatorLiveData<List<Receta>>().apply {
+        addSource(_idCarpetaActual) { id ->
+            id?.let {
+                val busqueda = _busquedaEnCarpeta.value ?: ""
+                if (busqueda.isBlank()) {
+                    addSource(repository.obtenerRecetasDeCarpeta(it).asLiveData()) { value = it }
+                } else {
+                    addSource(repository.buscarRecetasDeCarpeta(it, busqueda).asLiveData()) { value = it }
+                }
+            }
+        }
+        addSource(_busquedaEnCarpeta) { busqueda ->
+            _idCarpetaActual.value?.let { id ->
+                if (busqueda.isNullOrBlank()) {
+                    addSource(repository.obtenerRecetasDeCarpeta(id).asLiveData()) { value = it }
+                } else {
+                    addSource(repository.buscarRecetasDeCarpeta(id, busqueda).asLiveData()) { value = it }
+                }
+            }
+        }
+    }
+
+    fun setCarpetaActual(id: Int) {
+        _idCarpetaActual.value = id
+    }
+
+    fun buscarEnCarpeta(busqueda: String) {
+        _busquedaEnCarpeta.value = busqueda
+    }
+
     fun obtenerRecetasDeCarpeta(carpetaId: Int): LiveData<List<Receta>> {
         return repository.obtenerRecetasDeCarpeta(carpetaId).asLiveData()
     }

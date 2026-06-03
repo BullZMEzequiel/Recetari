@@ -27,8 +27,8 @@ object ImageHelper {
             return
         }
 
-        // Caso 1: Es una URL de internet (GitHub/Cloudinary) o almacenamiento local
-        if (uriString.startsWith("http") || uriString.startsWith("content") || uriString.startsWith("file")) {
+        // Caso 1: Es una URL de internet, almacenamiento local (content://), o archivo directo (file:// o /)
+        if (uriString.startsWith("http") || uriString.startsWith("content") || uriString.startsWith("file") || uriString.startsWith("/")) {
             imageView.load(uriString) {
                 crossfade(true)
                 placeholder(R.drawable.ic_image_placeholder)

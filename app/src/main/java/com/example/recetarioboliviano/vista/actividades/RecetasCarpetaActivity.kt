@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.recetarioboliviano.RecetarioApp
 import com.example.recetarioboliviano.databinding.ActivityRecetasCarpetaBinding
@@ -32,7 +33,12 @@ class RecetasCarpetaActivity : AppCompatActivity() {
         carpetaId = intent.getIntExtra("carpeta_id", -1)
         val carpetaNombre = intent.getStringExtra("carpeta_nombre") ?: "Colección"
 
+        if (carpetaId != -1) {
+            carpetaViewModel.setCarpetaActual(carpetaId)
+        }
+
         setupToolbar(carpetaNombre)
+        setupSearchView()
         setupRecyclerView()
         observeData()
     }
@@ -42,6 +48,20 @@ class RecetasCarpetaActivity : AppCompatActivity() {
         supportActionBar?.title = nombre
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding.toolbar.setNavigationOnClickListener { finish() }
+    }
+
+    private fun setupSearchView() {
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                carpetaViewModel.buscarEnCarpeta(query ?: "")
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                carpetaViewModel.buscarEnCarpeta(newText ?: "")
+                return true
+            }
+        })
     }
 
     private fun setupRecyclerView() {
@@ -58,11 +78,9 @@ class RecetasCarpetaActivity : AppCompatActivity() {
     }
 
     private fun observeData() {
-        if (carpetaId != -1) {
-            carpetaViewModel.obtenerRecetasDeCarpeta(carpetaId).observe(this) { recetas ->
-                adapter.submitList(recetas)
-                binding.tvVacio.visibility = if (recetas.isEmpty()) View.VISIBLE else View.GONE
-            }
+        carpetaViewModel.recetasDeCarpeta.observe(this) { recetas ->
+            adapter.submitList(recetas)
+            binding.tvVacio.visibility = if (recetas.isEmpty()) View.VISIBLE else View.GONE
         }
     }
 }

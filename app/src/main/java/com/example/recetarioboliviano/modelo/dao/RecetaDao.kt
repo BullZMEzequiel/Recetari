@@ -36,6 +36,15 @@ interface RecetaDao {
     @Query("SELECT * FROM recetas WHERE titulo LIKE '%' || :busqueda || '%' AND categoria = :categoria ORDER BY titulo ASC")
     fun buscarRecetasPorCategoria(busqueda: String, categoria: String): Flow<List<Receta>>
 
+    @Query("SELECT * FROM recetas WHERE titulo LIKE '%' || :busqueda || '%' AND departamento = :departamento AND categoria = :categoria ORDER BY titulo ASC")
+    fun buscarRecetasPorDeptoYCategoria(busqueda: String, departamento: String, categoria: String): Flow<List<Receta>>
+
+    @Query("SELECT * FROM recetas WHERE departamento = :departamento AND categoria = :categoria ORDER BY titulo ASC")
+    fun obtenerRecetasPorDeptoYCategoria(departamento: String, categoria: String): Flow<List<Receta>>
+
+    @Query("SELECT * FROM recetas WHERE esFavorito = 1 AND (titulo LIKE '%' || :busqueda || '%' OR ingredientes LIKE '%' || :busqueda || '%') ORDER BY titulo ASC")
+    fun buscarFavoritos(busqueda: String): Flow<List<Receta>>
+
     // Buscar por nombre de receta o departamento
     @Query("SELECT * FROM recetas WHERE titulo LIKE '%' || :busqueda || '%' OR departamento LIKE '%' || :busqueda || '%' ORDER BY titulo ASC")
     fun buscarRecetasPorNombreODepartamento(busqueda: String): Flow<List<Receta>>
@@ -62,7 +71,10 @@ interface RecetaDao {
     @Query("SELECT COUNT(*) FROM recetas")
     suspend fun contarRecetas(): Int
 
-    // 2. Agregamos esta query para saber si una receta de internet ya la tenemos registrada en el celular
+    // 2. Agregamos estas queries para el servidor
     @Query("SELECT EXISTS(SELECT 1 FROM recetas WHERE servidorUrl = :url LIMIT 1)")
     suspend fun existeRecetaServidor(url: String): Boolean
+
+    @Query("SELECT * FROM recetas WHERE servidorUrl = :url LIMIT 1")
+    suspend fun obtenerRecetaPorUrlServidor(url: String): Receta?
 }

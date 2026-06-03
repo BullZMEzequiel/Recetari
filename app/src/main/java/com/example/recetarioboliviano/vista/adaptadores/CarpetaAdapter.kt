@@ -10,7 +10,8 @@ import com.example.recetarioboliviano.modelo.entidades.Carpeta
 
 class CarpetaAdapter(
     private val onItemClick: (Carpeta) -> Unit,
-    private val onEliminarClick: (Carpeta) -> Unit
+    private val onEliminarClick: (Carpeta) -> Unit,
+    private val onEditarClick: (Carpeta) -> Unit
 ) : ListAdapter<Carpeta, CarpetaAdapter.CarpetaViewHolder>(CarpetaDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CarpetaViewHolder {
@@ -29,6 +30,10 @@ class CarpetaAdapter(
             binding.tvCantidadRecetas.text = "Ver recetas"
             
             binding.root.setOnClickListener { onItemClick(carpeta) }
+            binding.root.setOnLongClickListener {
+                onEditarClick(carpeta)
+                true
+            }
             binding.btnEliminarCarpeta.setOnClickListener { onEliminarClick(carpeta) }
         }
     }

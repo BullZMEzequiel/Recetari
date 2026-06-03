@@ -7,6 +7,7 @@ import android.widget.EditText
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.recetarioboliviano.RecetarioApp
 import com.example.recetarioboliviano.databinding.ActivityCarpetasBinding
@@ -29,6 +30,7 @@ class CarpetasActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupToolbar()
+        setupSearchView()
         setupRecyclerView()
         setupFab()
         observeData()
@@ -41,6 +43,20 @@ class CarpetasActivity : AppCompatActivity() {
         binding.toolbar.setNavigationOnClickListener { finish() }
     }
 
+    private fun setupSearchView() {
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                viewModel.buscarCarpetas(query ?: "")
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                viewModel.buscarCarpetas(newText ?: "")
+                return true
+            }
+        })
+    }
+
     private fun setupRecyclerView() {
         adapter = CarpetaAdapter(
             onItemClick = { carpeta ->
@@ -51,6 +67,9 @@ class CarpetasActivity : AppCompatActivity() {
             },
             onEliminarClick = { carpeta ->
                 mostrarDialogoEliminar(carpeta)
+            },
+            onEditarClick = { carpeta ->
+                mostrarDialogoEditarCarpeta(carpeta)
             }
         )
         binding.rvCarpetas.layoutManager = LinearLayoutManager(this)
@@ -81,6 +100,24 @@ class CarpetasActivity : AppCompatActivity() {
                 val nombre = input.text.toString()
                 if (nombre.isNotBlank()) {
                     viewModel.crearCarpeta(nombre)
+                }
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
+    private fun mostrarDialogoEditarCarpeta(carpeta: Carpeta) {
+        val input = EditText(this)
+        input.setText(carpeta.nombre)
+        input.setSelection(carpeta.nombre.length)
+        
+        AlertDialog.Builder(this)
+            .setTitle("Renombrar Colección")
+            .setView(input)
+            .setPositiveButton("Guardar") { _, _ ->
+                val nuevoNombre = input.text.toString()
+                if (nuevoNombre.isNotBlank() && nuevoNombre != carpeta.nombre) {
+                    viewModel.actualizarCarpeta(carpeta.copy(nombre = nuevoNombre))
                 }
             }
             .setNegativeButton("Cancelar", null)
