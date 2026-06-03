@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
  */
 @Database(
     entities = [Usuario::class, Receta::class, Carpeta::class, RecetaCarpetaCrossRef::class],
-    version = 2,
+    version = 4,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -45,19 +45,10 @@ abstract class AppDatabase : RoomDatabase() {
                     .addCallback(object : RoomDatabase.Callback() {
                         override fun onCreate(db: SupportSQLiteDatabase) {
                             super.onCreate(db)
-                            // Corregido: Usamos una referencia local para asegurar la inicialización correcta en el hilo secundario
-                            INSTANCE?.let { database ->
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    poblarRecetasPredefinidas(database.recetaDao())
-                                    // Crear usuario por defecto
-                                    database.usuarioDao().insertar(Usuario(
-                                        id = 1,
-                                        nombre = "Nuevo Usuario",
-                                        departamento = "La Paz",
-                                        pais = "Bolivia",
-                                        avatarUri = null
-                                    ))
-                                }
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val database = getDatabase(context)
+                                poblarRecetasPredefinidas(database.recetaDao())
+                                // No creamos el usuario aquí para obligar al registro manual
                             }
                         }
                     })

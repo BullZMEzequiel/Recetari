@@ -169,22 +169,33 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun observeData() {
-        recetaViewModel.recetasFiltradas.observe(this) { recetas ->
-            adaptador.submitList(recetas)
-            actualizarMensajeVacio(recetas.isEmpty())
-        }
-
+        // 1. Observar de manera segura el perfil del usuario (Evita cierres inesperados)
         usuarioViewModel.usuarioActual.observe(this) { usuario ->
             if (usuario != null) {
+                // El usuario ya existe, cargamos su información normalmente
                 val primerNombre = usuario.nombre.split(" ").firstOrNull() ?: ""
                 binding.tvSaludo.text = "¡Hola, $primerNombre!"
                 binding.tvNombreUsuario.text = usuario.nombre
                 binding.tvUbicacionUsuario.text = "${usuario.departamento}, ${usuario.pais}"
                 binding.tvUbicacionUsuario.visibility = View.VISIBLE
+
+                // Usamos el ImageHelper actualizado con Coil para el avatar
                 ImageHelper.cargarAvatar(binding.ivAvatar, usuario.avatarUri)
             } else {
+                // 🚀 CONTROL CRÍTICO: Si no hay usuario registrado, redirigimos al Splash
+                // El Splash es quien debe decidir si ir a Registro o si hubo un error de carga
                 binding.tvUbicacionUsuario.visibility = View.GONE
+
+                val intent = Intent(this, SplashActivity::class.java)
+                startActivity(intent)
+                finish() // Destruimos MainActivity para frenar cualquier proceso roto en segundo plano
             }
+        }
+
+        // 2. Observar las recetas filtradas de la base de datos
+        recetaViewModel.recetasFiltradas.observe(this) { recetas ->
+            adaptador.submitList(recetas)
+            actualizarMensajeVacio(recetas.isEmpty())
         }
     }
 

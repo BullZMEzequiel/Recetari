@@ -37,26 +37,25 @@ class SplashActivity : AppCompatActivity() {
         binding.tvSubtitulo.startAnimation(slideUp)
         binding.btnSiguiente.startAnimation(slideUp)
 
-        // Verificar si el usuario ya está registrado
-        verificarUsuarioRegistrado()
-
         binding.btnSiguiente.setOnClickListener {
-            val usuarioRegistrado = prefs.getBoolean(Constantes.KEY_USUARIO_REGISTRADO, false)
-            if (usuarioRegistrado) {
-                irAMainActivity()
-            } else {
-                irARegistroActivity()
-            }
+            verificarUsuarioYNavegar()
         }
     }
 
-    private fun verificarUsuarioRegistrado() {
+    private fun verificarUsuarioYNavegar() {
         lifecycleScope.launch {
             val repository = (application as RecetarioApp).repository
             val usuario = repository.obtenerUsuarioSync()
+            
             if (usuario != null) {
+                // Si el usuario existe, guardamos en SharedPreferences y vamos al Main
                 prefs.edit().putBoolean(Constantes.KEY_USUARIO_REGISTRADO, true).apply()
                 prefs.edit().putInt(Constantes.KEY_USUARIO_ID, usuario.id).apply()
+                irAMainActivity()
+            } else {
+                // Si no existe, al registro
+                prefs.edit().putBoolean(Constantes.KEY_USUARIO_REGISTRADO, false).apply()
+                irARegistroActivity()
             }
         }
     }
