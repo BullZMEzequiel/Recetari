@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Recetario Boliviano</string>
+
+    <!-- Splash Screen -->
+    <string name="bienvenido_recetario">Bienvenido al Recetario Boliviano</string>
+    <string name="siguiente">Siguiente</string>
+    <string name="empezar">EMPEZAR</string>
+    <string name="sabores_de_bolivia">SABORES DE BOLIVIA</string>
+
+    <!-- Registro -->
+    <string name="registro_titulo">Registro de Usuario</string>
+    <string name="nombre">Nombre</string>
+    <string name="departamento">Departamento</string>
+    <string name="pais">País</string>
+    <string name="registrar">Registrarse</string>
+    <string name="seleccionar_imagen">Seleccionar Imagen</string>
+    <string name="tomar_foto">Tomar Foto</string>
+    <string name="seleccionar_galeria">Seleccionar de Galería</string>
+
+    <!-- Navegación -->
+    <string name="inicio">Inicio</string>
+    <string name="departamentos">Departamentos</string>
+    <string name="ver_todo">Ver Todo</string>
+    <string name="favoritos">Favoritos</string>
+    <string name="perfil">Perfil</string>
+
+    <!-- Perfil -->
+    <string name="mi_perfil">Mi Perfil</string>
+    <string name="cambiar_avatar">Cambiar Avatar</string>
+    <string name="guardar_cambios">GUARDAR CAMBIOS</string>
+
+    <!-- Recetas -->
+    <string name="nueva_receta">Nueva Receta</string>
+    <string name="editar_receta">Editar Receta</string>
+    <string name="titulo">Título</string>
+    <string name="tiempo_preparacion">Tiempo de Preparación</string>
+    <string name="cantidad_personas">Cantidad de Personas</string>
+    <string name="ingredientes">Ingredientes</string>
+    <string name="preparacion">Preparación</string>
+    <string name="categoria">Categoría</string>
+    <string name="guardar">Guardar</string>
+    <string name="eliminar">Eliminar</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="pasos_preparacion">Pasos de Preparación</string>
+    <string name="agregar_paso">Agregar Paso</string>
+
+    <!-- Categorías -->
+    <string name="sopa">Sopa</string>
+    <string name="segundo">Segundo</string>
+    <string name="postre">Postre</string>
+
+    <!-- Mensajes -->
+    <string name="no_hay_recetas">No hay recetas</string>
+    <string name="buscar">Buscar...</string>
+    <string name="filtro">Filtro</string>
+    <string name="todos">Todos</string>
+
+    <!-- Diálogos -->
+    <string name="confirmar_eliminacion">¿Está seguro de eliminar esta receta?</string>
+    <string name="seleccionar_departamento">Seleccionar Departamento</string>
+</resources>

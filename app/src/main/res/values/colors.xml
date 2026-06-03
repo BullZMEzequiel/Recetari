@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Colores Bolivianos - Cálidos y tradicionales -->
+    <color name="primary">#C1272D</color>
+    <color name="primary_dark">#8B1A1F</color>
+    <color name="primary_light">#E85A5E</color>
+
+    <color name="secondary">#F5A623</color>
+    <color name="secondary_dark">#C77D00</color>
+    <color name="secondary_light">#FFD166</color>
+
+    <!-- Verde Boliviano -->
+    <color name="verde_bolivia">#007A33</color>
+    <color name="verde_claro">#4CAF50</color>
+
+    <!-- Amarillo Boliviano -->
+    <color name="amarillo_bolivia">#FFD100</color>
+
+    <!-- Colores de la bandera -->
+    <color name="rojo_bolivia">#D52B1E</color>
+    <color name="azul_bolivia">#007A5E</color>
+
+    <!-- Fondos - FONDO BLANCO PARA MEJOR VISIBILIDAD -->
+    <color name="background">#FFFFFF</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="card_background">#FFFFFF</color>
+    <color name="white">#FFFFFF</color>
+
+    <!-- Texto - COLORES OSCUROS PARA VISIBILIDAD -->
+    <color name="text_primary">#1A1A1A</color>
+    <color name="text_secondary">#5A5A5A</color>
+    <color name="text_on_primary">#FFFFFF</color>
+    <color name="text_hint">#9E9E9E</color>
+
+    <!-- Estados -->
+    <color name="favorite">#E91E63</color>
+    <color name="favorite_outline">#BDBDBD</color>
+
+    <!-- Otros -->
+    <color name="divider">#E0E0E0</color>
+    <color name="error">#D32F2F</color>
+    <color name="success">#388E3C</color>
+</resources>
