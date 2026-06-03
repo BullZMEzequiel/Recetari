@@ -1,1 +1,21 @@
-[]
+[
+  {
+    "nombre": "CHAIRO",
+    "departamento": "La Paz",
+    "ingredientes": "1 CHUÑO\n2 PAPAAS\n3 AGUA",
+    "preparacion": "1 CHUÑO\n2 PAPAAS\n3 AGUA",
+    "imagen": "https://res.cloudinary.com/drrbwyrrn/image/upload/v1780495560/t8tiruucag932rs8mrvs.jpg",
+    "pasos": [
+      {
+        "numeroPaso": 1,
+        "descripcion": "REMOJAR CHUÑO",
+        "imagen": "https://res.cloudinary.com/drrbwyrrn/image/upload/v1780495562/xykab0nh1iw4cub7wrch.jpg"
+      },
+      {
+        "numeroPaso": 2,
+        "descripcion": "AGGUA A HERVIR",
+        "imagen": "https://res.cloudinary.com/drrbwyrrn/image/upload/v1780495562/ymxdvl3djzohwozcmo4s.jpg"
+      }
+    ]
+  }
+]
