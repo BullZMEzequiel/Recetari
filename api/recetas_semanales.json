@@ -19,20 +19,6 @@
     ]
   },
   {
-    "nombre": "THIMPU",
-    "departamento": "Cochabamba",
-    "ingredientes": "1 CAARNNE\n2 PAPAS",
-    "preparacion": "1 CAARNNE\n2 PAPAS",
-    "imagen": "https://res.cloudinary.com/drrbwyrrn/image/upload/v1780496805/mioaitz2538vcnljnd31.jpg",
-    "pasos": [
-      {
-        "numeroPaso": 1,
-        "descripcion": "ARRAANCAARL LAA PIEL",
-        "imagen": "https://res.cloudinary.com/drrbwyrrn/image/upload/v1780496806/dcspvwrpiux1lgenwz3v.jpg"
-      }
-    ]
-  },
-  {
     "nombre": "SAJTA",
     "departamento": "Chuquisaca",
     "ingredientes": "POLLO\nAGUA",
