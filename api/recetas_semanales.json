@@ -31,5 +31,19 @@
         "imagen": "https://res.cloudinary.com/drrbwyrrn/image/upload/v1780496806/dcspvwrpiux1lgenwz3v.jpg"
       }
     ]
+  },
+  {
+    "nombre": "SAJTA",
+    "departamento": "Chuquisaca",
+    "ingredientes": "POLLO\nAGUA",
+    "preparacion": "POLLO\nAGUA",
+    "imagen": "https://res.cloudinary.com/drrbwyrrn/image/upload/v1780512283/sctcbsbghwp0w1bbjd1t.jpg",
+    "pasos": [
+      {
+        "numeroPaso": 1,
+        "descripcion": "CORTAR EL POLLO",
+        "imagen": "https://res.cloudinary.com/drrbwyrrn/image/upload/v1780512284/sqbmfhkwmhp3ppchcfh5.jpg"
+      }
+    ]
   }
 ]
