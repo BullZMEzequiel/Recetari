@@ -31,5 +31,19 @@
         "imagen": "https://res.cloudinary.com/drrbwyrrn/image/upload/v1780512284/sqbmfhkwmhp3ppchcfh5.jpg"
       }
     ]
+  },
+  {
+    "nombre": "THIMPU",
+    "departamento": "Cochabamba",
+    "ingredientes": "SCCSCCSSCS",
+    "preparacion": "SCCSCCSSCS",
+    "imagen": "https://res.cloudinary.com/drrbwyrrn/image/upload/v1780514246/k21826mwdpsrdvz8gcoh.jpg",
+    "pasos": [
+      {
+        "numeroPaso": 1,
+        "descripcion": "SAXAXXA",
+        "imagen": "https://res.cloudinary.com/drrbwyrrn/image/upload/v1780514247/qnasnrq3p4zrpht7yg4o.jpg"
+      }
+    ]
   }
 ]
